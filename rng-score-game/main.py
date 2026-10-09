@@ -9,30 +9,39 @@ def roll(event):
     
     # Get the number input
     num_input = web.page["num_input"]
-    num = int(num_input.value)
 
-    # Check if input is in the valid range
-    if num <= 99 and num > 0:
-        # Random number
-        roll = random.randint(1, 100)
-
-        # Win/Loss
-        if roll >= num:
-            points += num
-
-            output_text = (  f"<b>You win!</b>"
-                           + f"<br>The random number was {roll}."
-                           + f"<br><br>You gain {num} points."
-                           + f"<br>Your current points are <b>{points}</b>."
-                        )
+    try: # Check if num is int
+        num = int(num_input.value)
+        
+        # Check if input is in the valid range
+        if 0 < num <= 99:
+            roll_val = random.randint(1, 100)
+            if roll_val >= num:
+                points += num
+                output_text = (
+                    f"<b>You win!</b><br>"
+                    f"The random number was {roll_val}.<br><br>"
+                    f"You gain {num} points.<br>"
+                    f"Your current points are <b>{points}</b>."
+                )
+            else:
+                output_text = (
+                    f"<b>You lose!</b><br>"
+                    f"The random number was {roll_val}.<br><br>"
+                    f"Final score: <b>{points}</b>"
+                )
+                points = 0
         else:
-            output_text = (  f"<b>You lose!</b>"
-                           + f"<br>The random number was {roll}."
-                           + f"<br><br>Final score: <b>{points}</b>."
-                        )
-            points = 0
-    else:
-        output_text = "Invalid input"
+            output_text = (
+            f"<b>Invalid input!</b><br>" 
+            f"Input must be between 1 and 99."
+        )
+
+    except ValueError:
+        output_text = (
+            f"<b>Invalid input!</b><br>" 
+            f"Please enter a valid integer."
+        )
 
     # Update the output text on the page
     output_div = web.page["output"]
