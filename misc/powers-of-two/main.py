@@ -1,6 +1,10 @@
 from pyscript import web, when
 
-output_text = None
+# Initial empty list display text that i should move to the html file later
+output_text = f"<br>[]"
+output_div = web.page["output"]
+output_div.innerHTML = output_text
+
 @when("click", "#submit-button")
 def pot(event):
     # Get the number input
