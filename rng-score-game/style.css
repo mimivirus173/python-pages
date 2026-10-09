@@ -1,0 +1,23 @@
+/* Oxygen font (unused) */
+/* Regular font */
+@font-face {
+  font-family: 'Oxygen';
+  src: url('./fonts/Oxygen-Regular.ttf') format('truetype');
+  font-weight: 400; /* Regular weight */
+  font-style: normal;
+  font-display: swap; /* Prevents invisible text while loading */
+}
+
+/* Bold font */
+@font-face {
+  font-family: 'Oxygen';
+  src: url('./fonts/Oxygen-Bold.ttf') format('truetype');
+  font-weight: 700; /* Bold weight */
+  font-style: normal;
+  font-display: swap; /* Prevents invisible text while loading */
+}
+
+/* Main */
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
