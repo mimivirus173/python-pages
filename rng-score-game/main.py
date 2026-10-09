@@ -28,7 +28,7 @@ def roll(event):
         else:
             output_text = (  f"<b>You lose!</b>"
                            + f"<br>The random number was {roll}."
-                           + f"<br>Your total points were <b>{points}</b>."
+                           + f"<br><br>Final score: <b>{points}</b>."
                         )
             points = 0
     else:
