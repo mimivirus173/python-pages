@@ -2,10 +2,12 @@ import random
 from pyscript import web, when
 
 points = 0
+highscore = 0
 output_text = None
 @when("click", "#submit-button")
 def roll(event):
-    global points # Declare points as global so its value persists
+    global points
+    global highscore
     
     # Get the number input
     num_input = web.page["num_input"]
@@ -18,11 +20,15 @@ def roll(event):
             roll_val = random.randint(1, 100)
             if roll_val >= num:
                 points += num
+
+                if points > highscore:
+                    highscore = points
+                
                 output_text = (
                     f"<b>You win!</b><br>"
                     f"The random number was {roll_val}.<br><br>"
                     f"You gain {num} points.<br>"
-                    f"Your current points are <b>{points}</b>."
+                    # f"Your current points are <b>{points}</b>."
                 )
             else:
                 output_text = (
@@ -43,6 +49,11 @@ def roll(event):
             f"Please enter a valid integer."
         )
 
-    # Update the output text on the page
+    # Update text on the page
+    # Text below the input box
     output_div = web.page["output"]
     output_div.innerHTML = output_text
+
+    # Score counter
+    header_div = web.page["header"]
+    header_div.innerHTML = f"Score: <b>{points}</b> High score: <b>{highscore}</b>"
