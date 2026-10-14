@@ -26,3 +26,12 @@
     margin: 0 auto;
     text-align: center;
 }
+
+.score-container {
+  display: flex;
+  gap: 20px;
+}
+
+#id1 {
+    margin-right: 30px;
+}

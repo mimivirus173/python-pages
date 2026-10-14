@@ -4,6 +4,10 @@ from pyscript import web, when
 points = 0
 highscore = 0
 output_text = None
+
+web.page["score"].innerHTML = f"<b>{points}</b>"
+web.page["highscore"].innerHTML = f"<b>{highscore}</b>"
+
 @when("click", "#submit-button")
 def roll(event):
     global points
@@ -54,6 +58,6 @@ def roll(event):
     output_div = web.page["output"]
     output_div.innerHTML = output_text
 
-    # Score counter
-    header_div = web.page["header"]
-    header_div.innerHTML = f"Score: <b>{points}</b> High score: <b>{highscore}</b>"
+    # Score counters
+    web.page["score"].innerHTML = f"<b>{points}</b>"
+    web.page["highscore"].innerHTML = f"<b>{highscore}</b>"
