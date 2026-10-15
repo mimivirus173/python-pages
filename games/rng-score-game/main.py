@@ -55,8 +55,7 @@ def roll(event):
 
     # Update text on the page
     # Text below the input box
-    output_div = web.page["output"]
-    output_div.innerHTML = output_text
+    web.page["output"] = output_text
 
     # Score counters
     web.page["score"].innerHTML = f"<b>{points}</b>"
