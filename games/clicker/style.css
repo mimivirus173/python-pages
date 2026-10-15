@@ -1,0 +1,12 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+}
+
+#container {
+    margin: 0 auto;
+    text-align: center;
+}
+
+#count {
+    margin-top: 20px;
+}
