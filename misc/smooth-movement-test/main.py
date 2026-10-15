@@ -1,0 +1,58 @@
+import pygame as pg, asyncio
+
+pg.init()
+
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 1000
+
+screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+# player
+player = pg.Rect(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 50, 50)
+
+# player variables
+player_xvel = player_yvel = 0
+player_left = player_right = player_up = player_down = 0
+
+def movement_phys(speed, friction):
+    global player_xvel, player_yvel
+    global player_left, player_right, player_up, player_down
+
+    player_xvel += (player_right - player_left) * speed
+    player_xvel *= friction
+
+    player_yvel += (player_down - player_up) * speed
+    player_yvel *= friction
+
+async def main():
+    clock = pg.time.Clock()
+    global player_left, player_right, player_up, player_down
+
+    run = True
+    while run:
+        clock.tick(60)
+        screen.fill((0, 0, 0))
+
+        pg.draw.rect(screen, (255, 255, 255), player)
+
+        key = pg.key.get_pressed()
+
+        player_left = key[pg.K_a] or key[pg.K_LEFT]
+        player_right = key[pg.K_d] or key[pg.K_RIGHT]
+        player_up = key[pg.K_w] or key[pg.K_UP]
+        player_down = key[pg.K_s] or key[pg.K_DOWN]
+
+        movement_phys(3, 0.9)
+        player.move_ip(player_xvel, player_yvel)
+
+        for event in pg.event.get():
+            if event.type == pg.QUIT or key[pg.K_ESCAPE]:
+                run = False
+
+        pg.display.update()
+
+        await asyncio.sleep(0)
+
+    pg.quit()
+
+asyncio.run(main())
