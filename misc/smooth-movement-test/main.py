@@ -1,58 +1,70 @@
-import pygame as pg, asyncio
+import pygame as pg, asyncio, sys, time
 
 pg.init()
 
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 1000
+if sys.platform == "emscripten":
+    from js import window
+    SCREEN_WIDTH, SCREEN_HEIGHT = int(window.innerWidth), int(window.innerHeight)
+else:
+    SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
+SPEED = 3
+FRICTION = 0.9
 
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
-# player
-player = pg.Rect(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 50, 50)
+# player: float position and velocity
+px, py = SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2
+vx = vy = 0.0
+SIZE = 50
 
-# player variables
-player_xvel = player_yvel = 0
-player_left = player_right = player_up = player_down = 0
+if sys.platform == "emscripten":
+    from pyodide.ffi import create_once_callable
+    from js import requestAnimationFrame
 
-def movement_phys(speed, friction):
-    global player_xvel, player_yvel
-    global player_left, player_right, player_up, player_down
-
-    player_xvel += (player_right - player_left) * speed
-    player_xvel *= friction
-
-    player_yvel += (player_down - player_up) * speed
-    player_yvel *= friction
+    def next_frame():
+        fut = asyncio.get_running_loop().create_future()
+        requestAnimationFrame(create_once_callable(lambda t: fut.set_result(t)))
+        return fut
+else:
+    async def next_frame():
+        await asyncio.sleep(1 / 60)
 
 async def main():
-    clock = pg.time.Clock()
-    global player_left, player_right, player_up, player_down
+    global px, py, vx, vy
+    last = time.perf_counter()
 
     run = True
     while run:
-        clock.tick(60)
-        screen.fill((0, 0, 0))
-
-        pg.draw.rect(screen, (255, 255, 255), player)
+        now = time.perf_counter()
+        f = min((now - last) * 60, 3)  # elapsed time in "60 FPS frames", capped
+        last = now
 
         key = pg.key.get_pressed()
+        left = key[pg.K_a] or key[pg.K_LEFT]
+        right = key[pg.K_d] or key[pg.K_RIGHT]
+        up = key[pg.K_w] or key[pg.K_UP]
+        down = key[pg.K_s] or key[pg.K_DOWN]
 
-        player_left = key[pg.K_a] or key[pg.K_LEFT]
-        player_right = key[pg.K_d] or key[pg.K_RIGHT]
-        player_up = key[pg.K_w] or key[pg.K_UP]
-        player_down = key[pg.K_s] or key[pg.K_DOWN]
+        # same feel as before, scaled by elapsed time
+        vx += (right - left) * SPEED * f
+        vx *= FRICTION ** f
+        vy += (down - up) * SPEED * f
+        vy *= FRICTION ** f
 
-        movement_phys(3, 0.9)
-        player.move_ip(player_xvel, player_yvel)
+        px += vx * f
+        py += vy * f
 
         for event in pg.event.get():
             if event.type == pg.QUIT or key[pg.K_ESCAPE]:
                 run = False
 
+        screen.fill((0, 0, 0))
+        pg.draw.rect(screen, (255, 255, 255), (round(px), round(py), SIZE, SIZE))
         pg.display.update()
 
-        await asyncio.sleep(0)
+        await next_frame()
 
     pg.quit()
 
-asyncio.run(main())
+if sys.platform != "emscripten":
+    asyncio.run(main())
